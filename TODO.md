@@ -18,3 +18,14 @@ send requests to person who has a responded
 
 An admin 
 can see an manage database
+
+A normal faaculty 
+see a request to be a supevisor
+send  deny response to be adivisor
+see details of all project
+
+A advising faculty 
+see a requeset to be supervisor
+send accept to response for project serving as adivisor and deny project that don't serving as adivisor
+see details of all project
+approve project
