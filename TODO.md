@@ -1,31 +1,31 @@
 A student
-can login and see a pending request to become member
-can accept of deny the request 
-create a project 
+-create a project to become a lead
+-can see a project details 
+-can see a invite to be a member
+-can accept or deny a invite 
 
 A lead
-see project status
-see and modify project infomation
-see who has responded to the requests
-send out requests to be member to student
-send out requests toa potential advisor 
-accept or denny a member request from student
+-can invite a students to be a member
+-can see and modify a project details 
+-can invite a normal faculty to be an advisor
+-can propose a project to be evaluate
+-can submit a final project 
 
 A member
-see project status
-see and modify froject information
-send requests to person who has a responded
+-can see and modify a project 
+-can submit a final project 
 
 An admin 
-can see an manage database
+-can see and edit a database
+-help others eole to fix a database 
+-can invite a normal faculty to be a evaluator
 
 A normal faaculty 
-see a request to be a supevisor
-send  deny response to be adivisor
-see details of all project
+-can see a request to be a supervisor 
+-can be a evaluator for project 
+-can see a project details 
 
 A advising faculty 
-see a requeset to be supervisor
-send accept to response for project serving as adivisor and deny project that don't serving as adivisor
-see details of all project
-approve project
+-can see and modify a project details 
+-can be an evaluator for other projects 
+-can approve project before a evaluation 
