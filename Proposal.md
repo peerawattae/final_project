@@ -1,7 +1,6 @@
-How advising faculty can evaluate project
-lead will sent a project id that faulty need to evaluate to faulty/adivisor
-lead will sent a repo to faulty/advisor to see a project deatail
-faculty can see an detail of an project 
-faculty can only evaluate project that they be and adviser 
-when they search project id that they be and adviser they will see a title of a project, a lead, a member and project status to decide to evaluate
-they can evaluate project by using evaluate function that will ask for a password so only faulty can update a project status and after that project will be ready to final approval
+how can evaluated a project                                                                                                                                                                    
+*lead member sent a project detail to an advisor to apporve to be evaluate.																																																																																																																																														  
+*after adivisor aproove then hoose a evaluator in this case should be a middke man in this case is an admin choose 2-4 normal faculty to be an evaluator.																	                                                                                                                                                                                                    
+after evaluation                                                                                                                                                                                               																																																																																						   
+*if there is not thing else to be fix or to be upddate lead can prepare a project and final touch to summit a project                                                                         
+*if there is anything need to be fix or update lead and member will work on it and then sent to a advisor to approve to be evaluate again																											
