@@ -20,6 +20,8 @@ A normal faaculty
   -can see a request to be a supervisor                                                                                                                                                         
   -can be a evaluator for project                                                                                                                                                           
   -can see a project details                                                                                                                                                               
+  -can accept or deny a request to be a super visor
+
 A advising faculty                                                                                                                                                                         
   -can see and modify a project details                                                                                                                                                     
   -can be an evaluator for other projects                                                                                                                                                   
