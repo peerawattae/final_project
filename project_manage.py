@@ -2,6 +2,8 @@
 # import database module
 import copy
 import csv
+import random
+import datetime
 
 from database import DB, CSV, Table
 
@@ -11,6 +13,8 @@ def initializing():
     csv = CSV('persons.csv')
     csv2 = CSV('login.csv')
     csv3 = CSV('Member_pending_request.csv')
+    csv4 = CSV('Project_table.csv')
+    csv5 = CSV('Advisor_pending_request.csv')
     person = csv.open_csv()
     my_db = DB()
     person_table = Table('person', person)
@@ -21,6 +25,12 @@ def initializing():
     member_pending_csv = csv3.open_csv()
     member_pending_table = Table('member_pending', member_pending_csv)
     my_db.insert(member_pending_table)
+    project = csv4.open_csv()
+    project_table = Table('project_table', project)
+    my_db.insert(project_table)
+    advisor = csv5.open_csv()
+    advisor_pending = Table('advisor_pending', advisor)
+    my_db.insert(advisor_pending)
     return my_db
 
 # here are things to do in this function:
@@ -78,22 +88,141 @@ def login():
 
 # define a function called exit
 def exit():
-    with open('login.csv', 'a', newline='') as files:
-        writer = csv.DictWriter(files, fieldnames=['ID', 'username', 'password', 'role'])
-        # Assuming data2.search('login') returns a dictionary
-        data_login = data2.search('login')
-        data_login.to_dict()
-        writer.writeheader()
-        writer.writerow(data_login.to_dict('', ))
+    myFile = open('login.csv', 'w')
+    myFile2 = open('Member_pending_request.csv', 'w')
+    myFile3 = open('Project_table.csv', 'w')
+    myFile4 = open('Advisor_pending_request.csv', 'w')
+    writer = csv.writer(myFile)
+    writer2 = csv.writer(myFile2)
+    writer3 = csv.writer(myFile3)
+    writer4 = csv.writer(myFile4)
+    writer.writerow(['ID', 'username', 'password', 'role'])
+    writer2.writerow(['ProjectID', 'to_be_member', 'Response', 'Response_date'])
+    writer3.writerow(['ProjectID', 'Title', 'lead', 'Member1', 'Member2', 'Advisor', 'status'])
+    writer4.writerow(['ProjectID', 'to_be_advisor', 'Response', 'Response_date'])
+    for dictionary in data2.search('login').table:
+        writer.writerow(dictionary.values())
+    for dictionary in data2.search('member_pending').table:
+        writer2.writerow(dictionary.values())
+    for dictionary in data2.search('project_table').table:
+        writer3.writerow(dictionary.values())
+    for dictionary in data2.search('advisor_pending').table:
+        writer4.writerow(dictionary.values())
+    myFile.close()
 
-    # Writing 'Member_pending_request.csv'
-    with open('Member_pending_request.csv', 'a', newline='') as files:
-        writer = csv.DictWriter(files, fieldnames=['ProjectID', 'to_be_member', 'Response', 'Response_date'])
+def random_with_N_digits(n):
+    range_start = 10**(n-1)
+    range_end = (10**n)-1
+    return random.randint(range_start, range_end)
 
-        # Assuming data2.search('member_pending') returns a dictionary
-        data_member_pending = data2.search('member_pending')
-        writer.writeheader()
-        writer.writerow(data_member_pending.to_dict('to_be_member', 'pending'))
+class student:
+    def __init__(self, id=''):
+        self.id = id
+
+    def see(self):
+        for i in data2.search('member_pending').table:
+            if val[0] == i['to_be_member']:
+                print(data2.search('member_pending').filter(lambda x: x['to_be_member'] == val[0]))
+            elif val[0] != i['to_be_member']:
+                print('You have no more invite yet')
+        a_or_d = input('want to accept or deny(a/d): ')
+        if a_or_d == 'a':
+            for i in data2.search('member_pending').table:
+                id = i['ProjectID']
+            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == id).table:
+                if i['Member1'] == 'None':
+                    num = 'Member1'
+                elif i['Member1'] != 'None':
+                    num = 'Member2'
+            data2.search('member_pending').update_row('to_be_member', 'pending', 'to_be_member', 'accepted', 'to_be_member', val[0])
+            data2.search('login').update_row('role', 'student', 'role', 'member', 'ID', val[0])
+            data2.search('project_table').update_row(num, 'None', num, val[0], 'ProjectID', id)
+        elif a_or_d == 'd':
+            data2.search('member_pending').update_row('Response', 'pending', 'Response', 'deny', 'to_be_member', val[0])
+
+    def create(self):
+        project_name = input("Enter project name: ")
+        status = 'lead'
+        data2.search('login').update_row('role', 'student', 'role', status, 'ID', val[0])
+        print(data2.search('login'))
+        project_id = random_with_N_digits(6)
+        return project_id, project_name
+
+class lead:
+    def __init__(self, id=''):
+        self.id = id
+
+    def update(self):
+        for a in data2.search('project_table').filter(lambda x: x['lead'] == val[0]).table:
+            id = a['ProjectID']
+        status = input('what is your progress: ')
+        data2.search('project_table').update_row('status', 'None', 'status', status, 'ProjectID', id)
+        print('project updated')
+
+    def sent(self):
+        fac_or_mem = input('want to sent request to be member or to be advisor(member/faculty): ')
+        for a in data2.search('project_table').filter(lambda x: x['lead'] == val[0]).table:
+            id = a['ProjectID']
+        if fac_or_mem == 'member':
+            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == id).table:
+                if i['Member1'] != 'None' and i['Member2'] != 'None':
+                    print('Your group is full')
+                elif i['Member1'] == 'None' or i['Member2'] == 'None':
+                    print(data2.search('login').filter(lambda x: x['role'] == 'student'))
+                    st_want = int(input('who is student you want to invite (id): '))
+                    for i in data2.search('member_pending').table:
+                        if i['to_be_member'] == st_want:
+                            print('you already sent an invitation')
+                    status = 'pending'
+                    date = datetime
+                    dict_mem = {'ProjectID': id, 'to_be_member': st_want, 'Response': 'pending', 'Response_date': '11/11'}
+                    data2.search('member_pending').insert_row(dict_mem)
+                    print(data2.search('member_pending'))
+        elif fac_or_mem == 'faculty':
+            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == id).table:
+                if i['Advisor'] != 'None':
+                    print('Your group is full')
+                elif i['Advisor'] == 'None':
+                    print(data2.search('login').filter(lambda x: x['role'] == 'faculty'))
+                    fc_want = int(input('who is faculty you want to invite(id): '))
+                    for i in data2.search('advisor_pending').table:
+                        if i['to_be_advisor'] == fc_want:
+                            print('you already sent an invitation')
+                    dict_ad = {'ProjectID': id, 'to_be_advisor': fc_want, 'Response': 'pending', 'Response_date': '11/11'}
+                    data2.search('advisor_pending').insert_row(dict_ad)
+                    print(data2.search('advisor_pending'))
+
+class faculty:
+    def __init__(self, id=''):
+        self.id = id
+
+    def see(self):
+        for i in data2.search('advisor_pending').table:
+            if val[0] == i['to_be_advisor']:
+                print(data2.search('advisor_pending').filter(lambda x: x['to_be_advisor'] == val[0]))
+            elif val[0] != i['to_be_advisor']:
+                print('You have no more invite yet')
+        a_or_d = input('want to accept or deny(a/d): ')
+        if a_or_d == 'a':
+            for i in data2.search('advisor_pending').table:
+                id = i['ProjectID']
+            data2.search('advisor_pending').update_row('to_be_advisor', 'pending', 'to_be_advisor', 'accepted', 'ProjectID', id)
+            data2.search('login').update_row('role', 'faculty', 'role', 'advisor', 'ID', val[0])
+            data2.search('project_table').update_row('Advisor', 'None', 'Advisor', val[0], 'ProjectID', id)
+        elif a_or_d == 'd':
+            data2.search('advisor_pending').update_row('Response', 'pending', 'Response', 'deny', 'to_be_advisor', val[0])
+
+class advisor:
+    def __init__(self, id=''):
+        self.id = id
+
+    def update(self):
+        for a in data2.search('project_table').filter(lambda x: x['Advisor'] == val[0]).table:
+            id = a['ProjectID']
+        status = input('what is your progress: ')
+        data2.search('project_table').update_row('status', 'None', 'status', status, 'ProjectID', id)
+        print('project updated')
+
 
 # here are things to do in this function:
 # write out all the tables that have been modified to the corresponding csv files
@@ -124,39 +253,28 @@ print(val)
     # do member related activities
 #elif val[1] = 'faculty':
     # do faculty related activities
-a = data.search('login')
-k = data.search('member_pending')
 if val[1] == 'student':
     see_or_edit = input("Want to see a request table or create a project(see/create): ")
     if see_or_edit == 'see':
-        print(data2.search('member_pending'))
-        a_or_d = input('want to accept or deny(a/d): ')
-        if a_or_d == 'a':
-            data2.search('login').update_row('to_be_member', 'pending', 'to_be_member', 'accepted')
-            data2.search('member_pending').update_row('role', 'student', 'role', 'member', 'ID', val[0])
-        elif a_or_d == 'd':
-            data2.search('member_pending').update_row('to_be_member', 'pending', 'to_be_member', 'deny')
-
+        student.see(val[1])
     elif see_or_edit == 'create':
-        project_name = input("Enter project name: ")
-        status = 'lead'
-        data2.search('login').update_row('role', 'student', 'role', status, 'ID', val[0])
-        print(data2.search('login'))
+        ID, name = student.create(val[1])
+        dict1 = {'ProjectID': ID, 'Title': name, 'Lead': val[0], 'Member1': 'None', 'Member2': 'None', 'Advisor': 'None', 'status': 'None'}
+        data2.search('project_table').insert_row(dict1)
+        print(data2.search('project_table'))
 elif val[1] == 'lead':
     update_or_sent = input('update project or sent a request(update/sent): ')
     if update_or_sent == 'update':
-        print('updated')
+        lead.update(val[1])
     elif update_or_sent == 'sent':
-        fac_or_mem = input('want to sent request to be member or to be advisor(member/advisor): ')
-        if fac_or_mem == 'member':
-            data2.search('member_pending').insert_row([{'to_be_member': 'avarible'}])
-            data2.search('member_pending').update_row('to_be_member', 'avarible', 'to_be_member', 'pending')
-            print(data.search('member_pending'))
-        elif fac_or_mem == 'advisor':
-            data2.search('').update_row('to_be_advisor', 'avarible', 'to_be_advisor', 'pending')
+        lead.sent(val[1])
 
 elif val[1] == 'member':
-    see_or_update = input('want to see a project table ')
+    see_or_update = input('want to see a project table or update project(see/update):  ')
 
-for i in data2.search('login').table:
-    print({'role': i['role']})
+elif val[1] == 'faculty':
+    faculty.see(val[1])
+
+elif val[1] == 'advisor':
+    advisor.update(val[1])
+exit()
