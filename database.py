@@ -78,7 +78,7 @@ class Table:
     def __str__(self):
         return self.table_name + ':' + str(self.table)
 
-    def insert(self, list):
+    def insert_row(self, list):
         return self.table.append(list)
 
     def update_row(self, primary_attribute, primary_attribute_value, update_attribute, update_value, prima, selected_key):
