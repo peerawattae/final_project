@@ -34,35 +34,7 @@ def initializing():
     my_db.insert(advisor_pending)
     return my_db
 
-# here are things to do in this function:
 
-    # create an object to read an input csv file, persons.csv
-
-    # create a 'persons' table
-
-    # add the 'persons' table into the database
-
-    # create a 'login' table
-
-    # the 'login' table has the following keys (attributes):
-        # person_id
-        # username
-        # password
-        # role
-
-    # a person_id is the same as that in the 'persons' table
-
-    # let a username be a person's fisrt name followed by a dot and the first letter of that person's last name
-
-    # let a password be a random four digits string
-
-    # let the initial role of all the students be Member
-
-    # let the initial role of all the faculties be Faculty
-
-    # create a login table by performing a series of insert operations; each insert adds a dictionary to a list
-
-    # add the 'login' table into the database
 
 # define a funcion called login
 
@@ -101,34 +73,36 @@ def exit():
     writer2.writerow(['ProjectID', 'to_be_member', 'Response', 'Response_date'])
     writer3.writerow(['ProjectID', 'Title', 'lead', 'Member1', 'Member2', 'Advisor', 'status'])
     writer4.writerow(['ProjectID', 'to_be_advisor', 'Response', 'Response_date'])
-    for dictionary in data2.search('login').table:
+    for dictionary in data2.search('login').table:#update value in files csv
         writer.writerow(dictionary.values())
-    for dictionary in data2.search('member_pending').table:
+    for dictionary in data2.search('member_pending').table:#update value in files csv
         writer2.writerow(dictionary.values())
-    for dictionary in data2.search('project_table').table:
+    for dictionary in data2.search('project_table').table:#update value in files csv
         writer3.writerow(dictionary.values())
-    for dictionary in data2.search('advisor_pending').table:
+    for dictionary in data2.search('advisor_pending').table:#update value in files csv
         writer4.writerow(dictionary.values())
-    myFile.close()
+    myFile.close(), myFile2.close(), myFile3.close(), myFile4.close()
 
-def random_with_N_digits(n):
+def random_with_N_digits(n):#function to generate project id
     range_start = 10**(n-1)
     range_end = (10**n)-1
     return random.randint(range_start, range_end)
 
 class student:
     def __init__(self):
-        for i in data2.search('member_pending').table:
+        for i in data2.search('member_pending').table:#search for project id in Project_table
             self.id = i['ProjectID']
 
-    def see(self):
+    def see_pending(self):
         for i in data2.search('member_pending').table:
             if val[0] == i['to_be_member']:
                 print(data2.search('member_pending').filter(lambda x: x['to_be_member'] == val[0]))
             elif val[0] != i['to_be_member']:
                 print('You have no more invite yet')
-        a_or_d = input('want to accept or deny(a/d): ')
+
+    def accept_or_deny(self, a_or_d, id):
         if a_or_d == 'a':
+            #accept or deny only project thatt student want
             for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:
                 if i['Member1'] == 'None':
                     num = 'Member1'
@@ -137,13 +111,12 @@ class student:
                 else:
                     print('This group is full')
                     sys.exit('')
-
-            data2.search('member_pending').update_row('to_be_member', 'pending', 'to_be_member', 'accepted', 'to_be_member', val[0])
+            data2.search('member_pending').update_row('to_be_member', 'pending', 'to_be_member', 'accepted',
+                                                      'to_be_member', val[0])
             data2.search('login').update_row('role', 'student', 'role', 'member', 'ID', val[0])
-            data2.search('project_table').update_row(num, 'None', num, val[0], 'ProjectID', self.id)
+            data2.search('project_table').update_row(num, 'None', num, val[0], 'ProjectID', id)#num represent a Member1 or 2
         elif a_or_d == 'd':
             data2.search('member_pending').update_row('Response', 'pending', 'Response', 'deny', 'to_be_member', val[0])
-
     def create(self):
         project_name = input("Enter project name: ")
         status = 'lead'
@@ -153,8 +126,8 @@ class student:
         return project_id, project_name
 
 class lead:
-    def __init__(self, id=''):
-        for a in data2.search('project_table').filter(lambda x: x['lead'] == val[0]).table:
+    def __init__(self):
+        for a in data2.search('project_table').filter(lambda x: x['lead'] == val[0]).table:#searh for project id in project_table
             self.id = a['ProjectID']
             self.status = a['status']
 
@@ -166,7 +139,7 @@ class lead:
     def sent(self):
         fac_or_mem = input('want to sent request to be member or to be advisor(member/faculty): ')
         if fac_or_mem == 'member':
-            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:
+            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:#check if group full or not
                 if i['Member1'] != 'None' and i['Member2'] != 'None':
                     print('Your group is full')
                 elif i['Member1'] == 'None' or i['Member2'] == 'None':
@@ -181,7 +154,7 @@ class lead:
                     data2.search('member_pending').insert_row(dict_mem)
                     print(data2.search('member_pending'))
         elif fac_or_mem == 'faculty':
-            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:
+            for i in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:#check if group still avarible
                 if i['Advisor'] != 'None':
                     print('Your group is full')
                 elif i['Advisor'] == 'None':
@@ -195,27 +168,32 @@ class lead:
                     print(data2.search('advisor_pending'))
 
 class faculty:
-    def __init__(self, id=''):
-        for i in data2.search('advisor_pending').table:
+    def __init__(self):
+        for i in data2.search('advisor_pending').table:#searh for project id
             self.id = i['ProjectID']
 
-    def see(self):
+    def see_pending(self):
         for i in data2.search('advisor_pending').table:
             if val[0] == i['to_be_advisor']:
+                #print only project that sent invite to this id
                 print(data2.search('advisor_pending').filter(lambda x: x['to_be_advisor'] == val[0]))
             elif val[0] != i['to_be_advisor']:
                 print('You have no more invite yet')
-        a_or_d = input('want to accept or deny(a/d): ')
+
+    def accept_or_deny(self, a_or_d, id):
         if a_or_d == 'a':
-            data2.search('advisor_pending').update_row('to_be_advisor', 'pending', 'to_be_advisor', 'accepted', 'ProjectID', self.id)
+            data2.search('advisor_pending').update_row('to_be_advisor', 'pending', 'to_be_advisor', 'accepted', 'ProjectID', id)
             data2.search('login').update_row('role', 'faculty', 'role', 'advisor', 'ID', val[0])
             data2.search('project_table').update_row('Advisor', 'None', 'Advisor', val[0], 'ProjectID', id)
         elif a_or_d == 'd':
             data2.search('advisor_pending').update_row('Response', 'pending', 'Response', 'deny', 'to_be_advisor', val[0])
 
+    def see_detail(self):
+        print(data2.search('project_table'))
+
 class advisor:
     def __init__(self):
-        for a in data2.search('project_table').filter(lambda x: x['Advisor'] == val[0]).table:
+        for a in data2.search('project_table').filter(lambda x: x['Advisor'] == val[0]).table:#searh for project id
             self.id = a['ProjectID']
             self.status = a['status']
 
@@ -227,15 +205,15 @@ class advisor:
     def see(self):
         print(data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id))
 
-    def approve(self):
-        a_or_p = input('approve this project or not (yes/no): ')
-        if a_or_p == 'yes':
+    def approve(self, approve):
+        if approve == 'yes':
             data2.search('project_table').update_row('status', self.status, 'status', 'approve', 'ProjectID', self.id)
-        elif a_or_p == 'no':
+        elif approve == 'no':
             data2.search('project_table').update_row('status', self.status, 'status', 'not_approve', 'ProjectID', self.id)
 
 class member:
     def __init__(self):
+        #search for a project id and project status
         for a in data2.search('project_table').filter(lambda x: x['Member1'] == val[0] or x['Member2' == val[0]]).table:
             self.id = a['ProjectID']
             self.status = a['status']
@@ -249,63 +227,110 @@ class member:
 
 class admin:
     def __init__(self):
-        self.projectid = input('what project you want to edit: ')
-        self.id = input('whose id you want to edit')
-        self.username = input('what username you want to edit')
-        self.password = input('what password you want to edit')
-        self.role = input('what is role you want to edit')
-        self.title = input('what title you want to edit')
-        self.status = input('what is you status of project you want to edit')
-        self.response = input('what is old response you want to edit')
-        self.date = input('what is response date you want to edit')
+        self.greet = print('hello admin')
 
     def update(self):
             part = input('which part you want to edit: ')
             if part == 'ID':
+                id = input('whose id you want to edit')
                 new = input('what is new id')
-                data2.search('login').update_row('ID', self.id, 'ID', new, 'ID', self.id)
-                data2.search('advisor_pending').update_row('to_be_advisor', self.id, 'to_be_advisor', new, 'to_be_advisor', self.id)
-                data2.search('member_pending').update_row('to_be_member', self.id, 'to_be_member', new, 'to_be_member', self.id)
-                data2.search('project_table').update_row('lead', self.id, 'lead', new, 'lead', self.id)
-                data2.search('project_table').update_row('Member1', self.id, 'Member1', new, 'Member1', self.id)
-                data2.search('project_table').update_row('Member2', self.id, 'Member2', new, 'Member2', self.id)
-                data2.search('project_table').update_row('Advisor', self.id, 'Advisor', new, 'Advisor', self.id)
+                data2.search('login').update_row('ID', id, 'ID', new, 'ID', id)
+                data2.search('advisor_pending').update_row('to_be_advisor', id, 'to_be_advisor', new, 'to_be_advisor', id)
+                data2.search('member_pending').update_row('to_be_member', id, 'to_be_member', new, 'to_be_member', id)
+                data2.search('project_table').update_row('lead', id, 'lead', new, 'lead', id)
+                data2.search('project_table').update_row('Member1', id, 'Member1', new, 'Member1', id)
+                data2.search('project_table').update_row('Member2', id, 'Member2', new, 'Member2', id)
+                data2.search('project_table').update_row('Advisor', id, 'Advisor', new, 'Advisor', id)
             elif part == 'Username':
+                username = input('what username you want to edit')
                 new = input('what is new user name')
-                data2.search('login').update_row('username', self.username, 'username', new, 'username', self.username)
+                data2.search('login').update_row('username', username, 'username', new, 'username', username)
             elif part == 'password':
+                password = input('what password you want to edit')
                 new = input('whit is new password')
-                data2.search('login').update_row('password', self.password, 'password', new, 'password', self.password)
+                data2.search('login').update_row('password', password, 'password', new, 'password', password)
             elif part == 'role':
                 new = input('what is new role')
-                data2.search('login').update_row('role', self.role, 'role', new, 'role', self.role)
+                role = input('what is role you want to edit')
+                data2.search('login').update_row('role', role, 'role', new, 'role', role)
             elif part == 'projectid':
+                projectid = input('what project you want to edit: ')
                 new = input('what is new project id')
-                data2.search('project_table').update_row('ProjectID', self.projectid, 'ProjectID', new, 'ProjectID', self.projectid)
-                data2.search('advisor_pending').update_row('ProjectID', self.projectid, 'ProjectID', new, 'ProjectID', self.projectid)
-                data2.search('project_pending').update_row('ProjectID', self.projectid, 'ProjectID', new, 'ProjectID', self.projectid)
+                data2.search('project_table').update_row('ProjectID', projectid, 'ProjectID', new, 'ProjectID', projectid)
+                data2.search('advisor_pending').update_row('ProjectID', projectid, 'ProjectID', new, 'ProjectID', projectid)
+                data2.search('project_pending').update_row('ProjectID', projectid, 'ProjectID', new, 'ProjectID', projectid)
             elif part == 'title':
+                title = input('what title you want to edit')
                 new = input('what is new project title')
-                data2.search('project_table').update_row('Title', self.title, 'Title', new, 'Title', self.title)
+                data2.search('project_table').update_row('Title', title, 'Title', new, 'Title', title)
             elif part == 'status':
+                status = input('what is you status of project you want to edit')
                 new = input('what is new status')
-                data2.search('project_table').update_row('status', self.status, 'status', new, 'status', self.status)
+                data2.search('project_table').update_row('status', status, 'status', new, 'status', status)
             elif part == 'response':
+                response = input('what is old response you want to edit')
                 new = input('what is new response')
-                data2.search('member_pending').update_row('Response', self.response, 'Response', new, 'Response', self.response)
-                data2.search('advisor_pending').update_row('Response', self.response, 'Response', new, 'Response', self.response)
+                data2.search('member_pending').update_row('Response', response, 'Response', new, 'Response', response)
+                data2.search('advisor_pending').update_row('Response', response, 'Response', new, 'Response', response)
             elif part == 'response_date':
+                date = input('what is response date you want to edit')
                 new = input('new date')
-                data2.search('member_pending').update_row('Response_date', self.date, 'Response_date', new, 'Response', self.date)
-                data2.search('advisor_pending').update_row('Response_date', self.date, 'Response_date', new, 'Response', self.date)
+                data2.search('member_pending').update_row('Response_date', date, 'Response_date', new, 'Response', date)
+                data2.search('advisor_pending').update_row('Response_date', date, 'Response_date', new, 'Response', date)
+
+    def see(self):
+        part = input('which table you want to see')
+        if part == 'Advisor_pending':
+            print(data2.search('advisor_pending'))
+        elif part == 'Project_table':
+            print(data2.search('project_table'))
+        elif part == 'Member_pending':
+            print(data2.search('member_pending'))
+        elif part == 'login':
+            print(data2.search('login'))
+
+    def choose(self):
+        num = 0
+        while num < 3:
+            x = data2.search('login').filter(lambda x: x['role'] == 'evaluator').table
+            if len(x) == 3:
+                print('this project have enough evaluator')
+                break
+            else:
+                print(data2.search('login').filter(lambda x: x['role'] == 'faculty'))
+                which = input('who is you choose to be evaluator(id): ')
+                data2.search('login').update_row('role', 'faculty', 'role', 'evaluator', 'ID', which)
+                num += 1
+
+class evaluator:
+    def __init__(self, id):
+        self.id = id
+        #search for old score
+        for x in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:
+            self.old_score = x['status']
+
+    def evaluation(self):
+        score = int(input('what score you rate this project (1-10): '))
+        #chcek if this project have already rate yet
+        if self.old_score != 'approve' or self.old_score != 'not_approve':
+            #convert old score to int
+            try:
+                old = float(self.old_score)
+                data2.search('project_table').update_row('status', self.old_score, 'status', str((score + old) / 2),
+                                                         'ProjectID', self.id)
+            except ValueError:
+                print('value erroe')
+        elif self.old_score == 'approve':
+            data2.search('project_table').update_row('status', 'approve', 'status', str(score), 'ProjectID', self.id)
+        elif self.old_score == 'not_approve':
+            print('this project is not ready to evaluation')
+        data2.search('login').update_row('role', 'evaluator', 'role', 'faculty', 'ID', val[0])
 
 
 
-# here are things to do in this function:
-# write out all the tables that have been modified to the corresponding csv files
-# By now, you know how to read in a csv file and transform it into a list of dictionaries. For this project, you also need to know how to do the reverse, i.e., writing out to a csv file given a list of dictionaries. See the link below for a tutorial on how to do this:
 
-# https://www.pythonforbeginners.com/basics/list-of-dictionaries-to-csv-in-python
+
+
 
 
 # make calls to the initializing and login functions defined above
@@ -320,46 +345,96 @@ print(val)
 
 # based on the return value for login, activate the code that performs activities according to the role defined for that person_id
 
-# if val[1] = 'admin':
-    # do admin related activities
-# elif val[1] = 'advisor':
-    # do advisor related activities
-# elif val[1] = 'lead':
-    # do lead related activities
-# elif val[1] = 'member':
-    # do member related activities
-#elif val[1] = 'faculty':
-    # do faculty related activities
+
 if val[1] == 'student':
-    see_or_edit = input("Want to see a request table or create a project(see/create): ")
-    if see_or_edit == 'see':
-        s = student()
-        s.see()
-    elif see_or_edit == 'create':
-        ID, name = student.create(val[1])
-        dict1 = {'ProjectID': ID, 'Title': name, 'Lead': val[0], 'Member1': 'None', 'Member2': 'None', 'Advisor': 'None', 'status': 'None'}
-        data2.search('project_table').insert_row(dict1)
-        print(data2.search('project_table'))
+    s = student()
+    see_or_edit = input("Want to see a request table or create or accept/deny a project(see/create/accept or deny): ")
+    while see_or_edit != 'exit':
+        if see_or_edit == 'see':
+            s.see_pending()
+        elif see_or_edit == 'create':
+            ID, name = student.create(val[1])
+            dict1 = {'ProjectID': ID, 'Title': name, 'Lead': val[0], 'Member1': 'None', 'Member2': 'None', 'Advisor': 'None', 'status': 'None'}
+            data2.search('project_table').insert_row(dict1)
+            print(data2.search('project_table'))
+            break
+        elif see_or_edit == 'accept or deny':
+            which = input('which project you want to accept/deny(id): ')
+            a_or_d = input('want to accept or deny(a/d): ')
+            s.accept_or_deny(a_or_d, which)
+        see_or_edit = input('you want to continue or exit(continue or exit): ')
+
 elif val[1] == 'lead':
     l = lead()
     update_or_sent = input('update project or sent a request(update/sent): ')
-    if update_or_sent == 'update':
-        l.update()
-    elif update_or_sent == 'sent':
-        l.sent()
+    while update_or_sent != 'exit':
+        if update_or_sent == 'update':
+            l.update()
+        elif update_or_sent == 'sent':
+            l.sent()
+        update_or_sent = input('you want to continue or exit(continue/exit): ')
 
 elif val[1] == 'member':
+    m = member()
     see_or_update = input('want to see a project table or update project(see/update):  ')
+    while see_or_update != 'exit':
+        if see_or_update == 'see':
+            m.see()
+        elif see_or_update == 'edit':
+            m.update()
+        see_or_update = input('you want to continue or exit(continue/exit): ')
 
 elif val[1] == 'faculty':
     f = faculty()
-    f.see()
+    what = input(
+        'you want to see advisor pending or see project_detail or accept/deny advisor pending(pending/ detail/ a): '
+    )
+    while what != 'exit':
+        if what == 'pending':
+            f.see_pending()
+        elif what == 'detail':
+            f.see_detail()
+        elif what == 'a':
+            which = input('which project do you want to accept or deny(id): ')
+            a_or_d = input('do you accept or deny(a/d): ')
+            f.accept_or_deny(a_or_d, which)
+            if a_or_d == 'a':
+                break
+        what = input('you want to continue or exit(continue/exit): ')
 
 elif val[1] == 'advisor':
     a = advisor()
-    update_or_see = input('what to update or see project table(update/see): ')
-    if update_or_see == 'see':
-        pass
-    elif update_or_see == 'update':
-        a.update()
+    update_or_see = input('what to update or see project table or approve a project(update/see/approve): ')
+    while update_or_see != 'exit':
+        if update_or_see == 'see':
+            a.see()
+        elif update_or_see == 'approve':
+            approve = input('is this project approve(yes/no)')
+            if approve == 'yes':
+                a.approve(approve)
+            elif approve == 'no':
+                a.approve(approve)
+        elif update_or_see == 'update':
+            a.update()
+        update_or_see = input('what to update or see or exit project table(update/see/approve/exit): ')
+
+elif val[1] == 'admin':
+    x = admin()
+    see_or_edit = input('you want to see or edit or choose evaluator(see/edit/ choose): ')
+    while see_or_edit != 'exit':
+        if see_or_edit == 'see':
+            x.see()
+        elif see_or_edit == 'edit':
+            x.update()
+        elif see_or_edit == 'choose':
+            x.choose()
+        see_or_edit = input('you want to see or edit or choose evaluator(see/edit/choose/exit): ')
+
+elif val[1] == 'evaluator':
+    print(data2.search('project_table').filter(lambda x: x['status']))
+    id = input('which project you want to evaluation: ')
+    e = evaluator(id)
+    e.evaluation()
+
+
 exit()
