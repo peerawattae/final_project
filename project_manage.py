@@ -319,10 +319,16 @@ class admin:
                 which = input('who is you choose to be evaluator(id): ')
                 data2.search('login').update_row('role', 'faculty', 'role', 'evaluator', 'ID', which)
                 num += 1
+                id = input('what project will be evaluation')
+                data2.search('project_table').update_row('evaluator1', 'None', 'evaluator1', which, 'ProjectID', id)
+                data2.search('project_table').update_row('evaluator2', 'None', 'evaluator2', which, 'ProjectID', id)
+                data2.search('project_table').update_row('evaluator3', 'None', 'evaluator3', which, 'ProjectID', id)
 
 class evaluator:
-    def __init__(self, id):
-        self.id = id
+    def __init__(self):
+        #check for project id and check for evaluator for this project
+        for x in data2.search('project_table').filter(lambda x: x['evaluator1'] == val[0] or x['evaluator2'] == val[0] or x['evaluator3'] == val[0]):
+            self.id = x['ProjectID']
         #search for old score
         for x in data2.search('project_table').filter(lambda x: x['ProjectID'] == self.id).table:
             self.old_score = x['status']
@@ -438,13 +444,14 @@ elif val[1] == 'admin':
         elif see_or_edit == 'edit':
             x.update()
         elif see_or_edit == 'choose':
-            x.choose()
+           id_eva = x.choose()
         see_or_edit = input('you want to see or edit or choose evaluator(see/edit/choose/exit): ')
 
 elif val[1] == 'evaluator':
-    print(data2.search('project_table').filter(lambda x: x['status']))
-    id = input('which project you want to evaluation: ')
-    e = evaluator(id)
+    print(
+        data2.search('project_table').filter(lambda x: x['evaluator1'] == val[0] or x['evaluator2'] == val[0] or x['evaluator3'] == val[0])
+          )
+    e = evaluator()
     e.evaluation()
 
 else:
