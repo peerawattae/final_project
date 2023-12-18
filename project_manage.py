@@ -371,7 +371,9 @@ if val[1] == 'student':
             s.see_pending()
         elif see_or_edit == 'create':
             ID, name = student.create(val[1])
-            dict1 = {'ProjectID': ID, 'Title': name, 'Lead': val[0], 'Member1': 'None', 'Member2': 'None', 'Advisor': 'None', 'status': 'None'}
+            dict1 = {'ProjectID': ID, 'Title': name, 'Lead': val[0], 'Member1': 'None', 
+                     'Member2': 'None', 'Advisor': 'None', 'status': 'None',
+                    'evaluator1': 'None', 'evaluator2': 'None', 'evaluator3': 'None'}
             data2.search('project_table').insert_row(dict1)
             print(data2.search('project_table'))
             break
