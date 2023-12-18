@@ -1,0 +1,20 @@
+Role,Action,Method,Class,Completion percentage
+Admin,Update row in table,update,Admin,100%
+Admin,See all table,see,Admin,100%
+Admin,Choose evaluator,choose,Admin,80%
+Lead,Request a member,send_request,Lead,100%
+Lead,Request a advisor,send_request,Lead,100%
+Lead,Update project status,update,Lead,100%
+Lead,See a project detail,see,Lead,100%
+Member,See a project detail,see,Member,100%
+Member,Update project status,update,Member,90%
+Faculty,See all project detail,see,Faculty,100%
+Faculty,Accept or deny request,accept or deny,Faculty,100%
+Faculty,See request to be advisir,seee,Faculty,90%
+Advisor,See project detail,see,Advisor,100%
+Advisor,Update project status,update,Advisor,100%
+Advisor,Approve project,approve,Advisor,90%
+Student,Create a project,Create,Student,100%
+Student,See a member request,see,Student,100%
+Student,Accept or deny request,accept or deny,Student,100%
+Evaluator,Grade a project,evaluation,Evaluator,80%
