@@ -1,4 +1,4 @@
-# All of my current vertion of project now in 'main' branch
+# All of my current version of project now in 'main' branch
 * how to run
   - Frist you need these following files 1.project_manage.py 2.databse.py 3.login.csv 4.person.csv 5.Project_table 6.Advisor_pending_request.csv 7.Member_pending_request
   - Then when you first run the project_manage.py if you login as a student role the program will ask you if you want to see a member pending request or you want to create a project
@@ -12,3 +12,10 @@
   - admin can see all table and also can edit all of the colum in each table and can choose faculty to be a evaluator
   - when login as a evaluator you will have to grade a project on a scale of 1-10 then program will find a average score of this project
   - then you finish all step
+* detail for each files
+  -Advisor pending request this files contain a data of a advisor pending contian projectid to_be_advisor Response Response_date
+  -Member pending request this files contain a data of a member pending contian projectid to_be_advisor Response Response_date
+  -login.csv this files contian a data of each person such as a username id password and role
+  -person.csv this files  contian a data of each person such as a fist and last name id and type
+  -database.py this files contian a class database class table and class csv
+  -project_manage.py this files contain a class student, class lead, class member, class faculty, class advisor, class admin and class evaluator when compile you must compile this files
