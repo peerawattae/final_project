@@ -13,9 +13,9 @@
   - when login as a evaluator you will have to grade a project on a scale of 1-10 then program will find a average score of this project
   - then you finish all step
 * detail for each files
-  -Advisor pending request this files contain a data of a advisor pending contian projectid to_be_advisor Response Response_date
-  -Member pending request this files contain a data of a member pending contian projectid to_be_advisor Response Response_date
-  -login.csv this files contian a data of each person such as a username id password and role
-  -person.csv this files  contian a data of each person such as a fist and last name id and type
-  -database.py this files contian a class database class table and class csv
-  -project_manage.py this files contain a class student, class lead, class member, class faculty, class advisor, class admin and class evaluator when compile you must compile this files
+  - Advisor pending request this files contain a data of a advisor pending contian projectid to_be_advisor Response Response_date
+  - Member pending request this files contain a data of a member pending contian projectid to_be_advisor Response Response_date
+  - login.csv this files contian a data of each person such as a username id password and role
+  - person.csv this files  contian a data of each person such as a fist and last name id and type
+  - database.py this files contian a class database class table and class csv
+  - project_manage.py this files contain a class student, class lead, class member, class faculty, class advisor, class admin and class evaluator when compile you must compile this files
